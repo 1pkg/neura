@@ -1,4 +1,6 @@
 .vscode/
 env/
+dump/
+**/__pycache__/
 
 *.tar.gz
