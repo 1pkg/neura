@@ -1,4 +1,5 @@
 from os import path
+from inflection import underscore
 from keras.models import load_model
 
 from utils import Loader, Keeper
@@ -16,7 +17,7 @@ class Base:
         self.__model = None
 
     def name(self):
-        return self.__class__.__name__.lower()
+        return underscore(self.__class__.__name__)
 
     def model(self):
         if self.__model is None:

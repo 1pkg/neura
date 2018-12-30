@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Activation, Conv2D, Dropout, UpSampling2D
+from keras.layers import Conv2D, Dropout, UpSampling2D
 
 from .base import Base
 

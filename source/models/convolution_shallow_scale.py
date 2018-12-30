@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Activation, Conv2D, Dropout
+from keras.layers import Conv2D, Dropout
 
 from .base_scale import BaseScale
 
