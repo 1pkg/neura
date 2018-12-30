@@ -7,7 +7,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Loader:
-    def __init__(self, bundle):
+    def __init__(self, bundle, scale_factor=None):
         self.__path_base = path.join(
             path.dirname(__file__),
             '..',
@@ -15,6 +15,7 @@ class Loader:
             'dump',
         )
         self.__bundle = bundle
+        self.__scale_factor = scale_factor
 
     def gen_data_train(self, batch_size):
         path_train = path.join(self.__path_base, 'train', self.__bundle)
@@ -42,6 +43,11 @@ class Loader:
                         data_item_src /= 255
                         data_batch_src.append(data_item_src)
                     with Image.open(file_name_mod) as image:
+                        if self.__scale_factor:
+                            image = image.resize((
+                                int(image.size[0] * self.__scale_factor),
+                                int(image.size[1] * self.__scale_factor),
+                            ), Image.NEAREST)
                         data_item_mod = numpy.array(image)
                         data_item_mod = data_item_mod.astype('float32')
                         data_item_mod /= 255
@@ -73,6 +79,11 @@ class Loader:
                     data_item_src /= 255
                     data_batch_src.append(data_item_src)
                 with Image.open(file_name_mod) as image:
+                    if self.__scale_factor:
+                        image = image.resize((
+                            int(image.size[0] * self.__scale_factor),
+                            int(image.size[1] * self.__scale_factor),
+                        ), Image.NEAREST)
                     data_item_mod = numpy.array(image)
                     data_item_mod = data_item_mod.astype('float32')
                     data_item_mod /= 255

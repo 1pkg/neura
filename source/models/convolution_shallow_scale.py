@@ -1,10 +1,10 @@
 from keras.models import Sequential
-from keras.layers import Activation, Conv2D, Dropout, UpSampling2D
+from keras.layers import Activation, Conv2D, Dropout
 
-from .base import Base
+from .base_scale import BaseScale
 
 
-class ConvolutionShallow(Base):
+class ConvolutionShallowScale(BaseScale):
     def _model(self):
         model = Sequential()
         model.add(
@@ -13,18 +13,16 @@ class ConvolutionShallow(Base):
                 9,
                 padding='same',
                 activation='relu',
-                input_shape=(160, 90, 3),
+                input_shape=(640, 360, 3),
             ))
-        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 32,
                 1,
                 padding='same',
                 activation='relu',
-                input_shape=(320, 180, 64),
+                input_shape=(640, 360, 64),
             ))
-        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 3,

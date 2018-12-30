@@ -9,9 +9,9 @@ class Corruptor:
     def __init__(
             self,
             bundle,
-            result_image_quality=5,
-            result_image_blur=2,
-            result_image_size_factor=4,
+            image_quality=5,
+            image_blur=2,
+            image_size_factor=4,
             with_crop=False,
             crop_height=640,
             crop_width=360,
@@ -26,9 +26,9 @@ class Corruptor:
         self.__path_train = path.join(path_base, 'train', bundle)
         self.__path_test = path.join(path_base, 'test', bundle)
         self.__verbose = verbose
-        self.__result_image_quality = result_image_quality
-        self.__result_image_blur = result_image_blur
-        self.__result_image_size_factor = result_image_size_factor
+        self.__image_quality = image_quality
+        self.__image_blur = image_blur
+        self.__image_size_factor = image_size_factor
         self.__with_crop = with_crop
         self.__crop_height = crop_height
         self.__crop_width = crop_width
@@ -66,17 +66,17 @@ class Corruptor:
     def __run_single_internal(self, path_src, path_dst):
         with Image.open(path_src) as image:
             image = image.convert('RGB')
-            if (self.__result_image_size_factor):
+            if self.__image_size_factor:
                 image = image.resize((
-                    int(image.size[0] / self.__result_image_size_factor),
-                    int(image.size[1] / self.__result_image_size_factor),
+                    int(image.size[0] / self.__image_size_factor),
+                    int(image.size[1] / self.__image_size_factor),
                 ), Image.NEAREST)
-            blur = ImageFilter.GaussianBlur(radius=self.__result_image_blur)
+            blur = ImageFilter.GaussianBlur(radius=self.__image_blur)
             image = image.filter(blur)
             image.save(
                 path_dst,
                 'JPEG',
-                quality=self.__result_image_quality,
+                quality=self.__image_quality,
                 optimize=True,
                 progressive=True,
             )
