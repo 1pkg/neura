@@ -1,18 +1,52 @@
-from os import path, listdir, makedirs, rmdir
+from os import path, listdir, makedirs
+from shutil import rmtree
 from PIL import Image, ImageFile, ImageFilter
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Corruptor:
-    RESULT_IMAGE_QUALITY = 5
-    RESULT_IMAGE_BLUR = 3
-    RESULT_IMAGE_SIZE_FACTOR = 4
+    def __init__(
+            self,
+            bundle,
+            result_image_quality=5,
+            result_image_blur=2,
+            result_image_size_factor=4,
+            with_crop=False,
+            crop_height=640,
+            crop_width=360,
+            verbose=True,
+    ):
+        path_base = path.join(
+            path.dirname(__file__),
+            '..',
+            '..',
+            'dump',
+        )
+        self.__path_train = path.join(path_base, 'train', bundle)
+        self.__path_test = path.join(path_base, 'test', bundle)
+        self.__verbose = verbose
+        self.__result_image_quality = result_image_quality
+        self.__result_image_blur = result_image_blur
+        self.__result_image_size_factor = result_image_size_factor
+        self.__with_crop = with_crop
+        self.__crop_height = crop_height
+        self.__crop_width = crop_width
 
-    @classmethod
-    def run_walk(cls, path_src, path_dst, verbose=True):
+    def run_walk(self):
+        data_path_src = f'{self.__path_train}_src'
+        data_path_mod = f'{self.__path_train}_mod'
+        self.__run_walk_internal(data_path_src, data_path_mod)
+        data_path_src = f'{self.__path_test}_src'
+        data_path_mod = f'{self.__path_test}_mod'
+        self.__run_walk_internal(data_path_src, data_path_mod)
+
+    def __run_walk_internal(self, path_src, path_dst):
+        if not path.exists(path_src):
+            return
+
         if path.exists(path_dst):
-            rmdir(path_dst)
+            rmtree(path_dst)
         makedirs(path_dst)
 
         index = 0
@@ -22,27 +56,54 @@ class Corruptor:
             file_name_dst = path.join(path_dst, file_name)
             if (path.isfile(file_name_src)):
                 index += 1
-                cls.run_single(file_name_src, file_name_dst)
-                if verbose and index % 500 == 0:
-                    print(
-                        f'corruptor processing {path_src} | done {index} of {len(path_list)}'
-                    )
+                if self.__with_crop:
+                    self.__run_single_crop(file_name_src)
+                self.__run_single_internal(file_name_src, file_name_dst)
+                if self.__verbose and index % 500 == 0:
+                    msg = f'corruptor processing {path_src} | done {index} of {len(path_list)}'
+                    print(msg)
 
-    @classmethod
-    def run_single(cls, path_src, path_dst):
+    def __run_single_internal(self, path_src, path_dst):
         with Image.open(path_src) as image:
             image = image.convert('RGB')
-            image.size
-            image = image.resize((
-                int(image.size[0] / cls.RESULT_IMAGE_SIZE_FACTOR),
-                int(image.size[1] / cls.RESULT_IMAGE_SIZE_FACTOR),
-            ))
-            blur = ImageFilter.GaussianBlur(radius=cls.RESULT_IMAGE_BLUR)
+            if (self.__result_image_size_factor):
+                image = image.resize((
+                    int(image.size[0] / self.__result_image_size_factor),
+                    int(image.size[1] / self.__result_image_size_factor),
+                ), Image.NEAREST)
+            blur = ImageFilter.GaussianBlur(radius=self.__result_image_blur)
             image = image.filter(blur)
             image.save(
                 path_dst,
                 'JPEG',
-                quality=cls.RESULT_IMAGE_QUALITY,
+                quality=self.__result_image_quality,
+                optimize=True,
+                progressive=True,
+            )
+
+    def __run_single_crop(self, path_src):
+        with Image.open(path_src) as image:
+            image = image.convert('RGB')
+            width, height = image.size
+            desire_height = self.__crop_height
+            desire_width = self.__crop_width
+
+            ratio_width = desire_width / width
+            ratio_height = desire_height / height
+            if ratio_width > ratio_height:
+                new_size = (desire_width, int(height * ratio_width))
+            else:
+                new_size = (int(width * ratio_height), desire_height)
+
+            image = image.resize(new_size, Image.NEAREST)
+            left = int((new_size[0] - desire_width) / 2.0)
+            top = int((new_size[1] - desire_height) / 2.0)
+            right = int((new_size[0] + desire_width) / 2.0)
+            bottom = int((new_size[1] + desire_height) / 2.0)
+            image = image.crop((left, top, right, bottom))
+            image.save(
+                path_src,
+                'JPEG',
                 optimize=True,
                 progressive=True,
             )
