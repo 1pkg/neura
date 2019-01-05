@@ -8,13 +8,7 @@ class Plotter:
 
     def show(self, history):
         if history is None:
-            pass
-
-        pyplot.plot(history['loss'])
-        pyplot.title(f'model {self.__model} with bundle {self.__bundle} loss')
-        pyplot.ylabel('loss')
-        pyplot.xlabel('epoch')
-        pyplot.show()
+            return
 
         pyplot.plot(history['mean_squared_error'])
         pyplot.title(f'model {self.__model} with bundle {self.__bundle} mse')

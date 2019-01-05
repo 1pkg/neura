@@ -1,11 +1,13 @@
+import time
 from argparse import ArgumentParser
 
 argparser = ArgumentParser(description='neura')
 
 argparser.add_argument(
-    '--model_name',
+    '--model_names',
+    nargs='+',
     type=str,
-    help='name of model for working with',
+    help='names of model for working with',
 )
 
 argparser.add_argument(
@@ -110,35 +112,40 @@ if arguments.run_corruptor:
 
 import models
 
-for name, model in models.__dict__.items():
-    if name == arguments.model_name:
-        Model = model
-        break
+rmodels = []
+for model_name in arguments.model_names:
+    for name, model in models.__dict__.items():
+        if name == model_name:
+            rmodels.append(model())
+            break
 
-model = Model()
-if arguments.model_refresh:
-    model.train(
+for model in rmodels:
+    if arguments.model_refresh:
+        model.train(
+            arguments.bundle,
+            arguments.bundle_size,
+            arguments.bundle_steps_per_epoch,
+            arguments.bundle_epochs,
+            arguments.verbose,
+        )
+    else:
+        model.unserialize()
+    model.serialize()
+
+for model in rmodels:
+    time_start = time.time()
+    model.test(
         arguments.bundle,
         arguments.bundle_size,
-        arguments.bundle_steps_per_epoch,
-        arguments.bundle_epochs,
         arguments.verbose,
     )
-else:
-    model.unserialize()
-model.serialize()
-if arguments.show_train_plots:
-    plotter = utils.Plotter(arguments.bundle, model.name())
-    plotter.show(model.history())
-
-score = model.score(
-    arguments.bundle,
-    arguments.bundle_size,
-    arguments.verbose,
-)
-model.test(
-    arguments.bundle,
-    arguments.bundle_size,
-    arguments.verbose,
-)
-print(score)
+    score = model.score(
+        arguments.bundle,
+        arguments.bundle_size,
+        arguments.verbose,
+    )
+    time_diff = time.time() - time_start
+    print(model.name(), time_diff, score)
+    if arguments.show_train_plots:
+        plotter = utils.Plotter(arguments.bundle, model.name())
+        plotter.show(model.history())

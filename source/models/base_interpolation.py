@@ -56,10 +56,11 @@ class BaseInterpolation(Base):
             image /= 255
             averages_mse += mse_np(data[1][i], image)
             averages_psnr += psnr_np(data[1][i], image)
-        return (
+        return [
+            averages_mse / len(data[0]),
             averages_mse / len(data[0]),
             averages_psnr / len(data[0]),
-        )
+        ]
 
     def test(
             self,
