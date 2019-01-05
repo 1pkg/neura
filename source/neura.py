@@ -114,9 +114,6 @@ for name, model in models.__dict__.items():
     if name == arguments.model_name:
         Model = model
         break
-else:
-    excp = f'model {arguments.model_name} not found'
-    raise excp
 
 model = Model()
 if arguments.model_refresh:

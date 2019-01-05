@@ -32,7 +32,7 @@ class ConvolutionShallowScaled(BaseScaled):
                 activation='relu',
                 input_shape=(640, 360, 32),
             ))
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.15))
         model.compile(
             loss='mse',
             optimizer='adam',

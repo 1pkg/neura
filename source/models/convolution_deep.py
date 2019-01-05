@@ -56,7 +56,7 @@ class ConvolutionDeep(Base):
                 activation='relu',
                 input_shape=(160, 90, 32),
             ))  # 6
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.15))
         model.add(UpSampling2D())
         model.add(
             Conv2D(
@@ -114,7 +114,7 @@ class ConvolutionDeep(Base):
                 activation='relu',
                 input_shape=(320, 180, 16),
             ))  # 13
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.15))
         model.add(UpSampling2D())
         model.add(
             Conv2D(
@@ -132,7 +132,7 @@ class ConvolutionDeep(Base):
                 activation='relu',
                 input_shape=(640, 360, 9),
             ))  # 15
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.3))
         model.compile(
             loss='mse',
             optimizer='adam',
