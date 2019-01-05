@@ -52,14 +52,14 @@ argparser.add_argument(
 argparser.add_argument(
     '--corruptor_image_quality',
     type=int,
-    default=10,
+    default=25,
     help='result image quality of corruptor script in %',
 )
 
 argparser.add_argument(
     '--corruptor_image_blur',
     type=int,
-    default=2,
+    default=1,
     help='result image blur of corruptor script in px',
 )
 

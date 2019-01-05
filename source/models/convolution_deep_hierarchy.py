@@ -4,7 +4,7 @@ from keras.layers import Conv2D, Dropout, UpSampling2D
 from .base import Base
 
 
-class ConvolutionDeep(Base):
+class ConvolutionDeepHierarchy(Base):
     def _model(self):
         model = Sequential()
         model.add(

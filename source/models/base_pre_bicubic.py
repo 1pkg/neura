@@ -2,7 +2,7 @@ from .base import Base
 from utils import Loader, Keeper
 
 
-class BaseScale(Base):
+class BasePreBicubic(Base):
     def train(
             self,
             bundle,
@@ -12,7 +12,7 @@ class BaseScale(Base):
             verbose=True,
             scale_factor=4,
     ):
-        loader = Loader(bundle, scale_factor)
+        loader = Loader(bundle, scale_factor, 3)
         self.model().fit_generator(
             loader.gen_data_train(bundle_size),
             steps_per_epoch=steps_per_epoch,
@@ -27,7 +27,7 @@ class BaseScale(Base):
             verbose=True,
             scale_factor=4,
     ):
-        loader = Loader(bundle, scale_factor)
+        loader = Loader(bundle, scale_factor, 3)
         return self.model().evaluate_generator(
             loader.gen_data_test(bundle_size),
             steps=1,
@@ -41,7 +41,7 @@ class BaseScale(Base):
             verbose=True,
             scale_factor=4,
     ):
-        loader = Loader(bundle, scale_factor)
+        loader = Loader(bundle, scale_factor, 3)
         data = loader.data_test(bundle_size)
         result = self.model().predict(
             data[0],

@@ -9,8 +9,8 @@ class Corruptor:
     def __init__(
             self,
             bundle,
-            image_quality=5,
-            image_blur=2,
+            image_quality=25,
+            image_blur=1,
             image_size_factor=4,
             with_crop=False,
             crop_height=640,
