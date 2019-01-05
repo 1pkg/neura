@@ -1,18 +1,27 @@
 from os import path
 from inflection import underscore
 from keras.models import load_model
+from pickle import dump, load
 
+from .loss_func import psnr_loss
 from utils import Loader, Keeper
 
 
 class Base:
     def __init__(self):
-        self.__path_base = path.join(
+        self._path_model = path.join(
             path.dirname(__file__),
             '..',
             '..',
             'dump',
-            'models',
+            'model',
+        )
+        self._path_history = path.join(
+            path.dirname(__file__),
+            '..',
+            '..',
+            'dump',
+            'history',
         )
         self.__model = None
 
@@ -28,13 +37,21 @@ class Base:
         return NotImplemented
 
     def serialize(self):
-        path_model = path.join(self.__path_base, self.name() + '.h5')
+        path_model = path.join(self._path_model, self.name() + '.h5')
         self.model().save(path_model)
 
     def unserialize(self):
-        path_model = path.join(self.__path_base, self.name() + '.h5')
+        path_model = path.join(self._path_model, self.name() + '.h5')
         if path.isfile(path_model):
-            self.__model = load_model(path_model)
+            self.__model = load_model(
+                path_model,
+                custom_objects={'psnr_loss': psnr_loss},
+            )
+
+    def history(self):
+        path_history = path.join(self._path_history, self.name() + '.hi')
+        with open(path_history, 'rb') as file_hi:
+            return load(file_hi)
 
     def train(
             self,
@@ -45,12 +62,15 @@ class Base:
             verbose=True,
     ):
         loader = Loader(bundle)
-        self.model().fit_generator(
+        history = self.model().fit_generator(
             loader.gen_data_train(bundle_size),
             steps_per_epoch=steps_per_epoch,
             epochs=epochs,
             verbose=verbose,
         )
+        path_history = path.join(self._path_history, self.name() + '.hi')
+        with open(path_history, 'wb') as file_hi:
+            dump(history.history, file_hi)
 
     def score(
             self,
@@ -81,4 +101,4 @@ class Base:
 
         keeper = Keeper(bundle, self.name())
         for i in range(0, len(data[0])):
-            keeper.save(f'{bundle}-{i}', data[1][i], data[0][i], result[i])
+            keeper.save(f'{bundle}-{i+1}', data[1][i], data[0][i], result[i])

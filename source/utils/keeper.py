@@ -23,37 +23,18 @@ class Keeper:
         makedirs(path_res)
 
         data_src *= 255
-        data_mod *= 255
-        data_res *= 255
-
         image = Image.fromarray(numpy.uint8(data_src))
         image = image.convert('RGB')
         file_name = path.join(path_res, 'src.jpeg')
         image.save(file_name, 'JPEG')
 
-        image = Image.fromarray(numpy.uint8(data_mod))
-        image = image.convert('RGB')
-        image = image.resize((360, 640), Image.NEAREST)
-        file_name = path.join(path_res, 'ner.jpeg')
-        image.save(file_name, 'JPEG')
-
-        image = Image.fromarray(numpy.uint8(data_mod))
-        image = image.convert('RGB')
-        image = image.resize((360, 640), Image.BILINEAR)
-        file_name = path.join(path_res, 'bil.jpeg')
-        image.save(file_name, 'JPEG')
-
-        image = Image.fromarray(numpy.uint8(data_mod))
-        image = image.convert('RGB')
-        image = image.resize((360, 640), Image.BICUBIC)
-        file_name = path.join(path_res, 'bic.jpeg')
-        image.save(file_name, 'JPEG')
-
+        data_mod *= 255
         image = Image.fromarray(numpy.uint8(data_mod))
         image = image.convert('RGB')
         file_name = path.join(path_res, 'mod.jpeg')
         image.save(file_name, 'JPEG')
 
+        data_res *= 255
         image = Image.fromarray(numpy.uint8(data_res))
         image = image.convert('RGB')
         file_name = path.join(path_res, 'res.jpeg')

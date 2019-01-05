@@ -2,15 +2,16 @@ from keras.models import Sequential
 from keras.layers import Conv2D, Dropout, UpSampling2D
 
 from .base import Base
+from .loss_func import psnr_loss
 
 
-class ConvolutionDeepHierarchy(Base):
+class ConvolutionDeep(Base):
     def _model(self):
         model = Sequential()
         model.add(
             Conv2D(
                 128,
-                24,
+                21,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 3),
@@ -18,7 +19,7 @@ class ConvolutionDeepHierarchy(Base):
         model.add(
             Conv2D(
                 128,
-                12,
+                15,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 128),
@@ -26,7 +27,7 @@ class ConvolutionDeepHierarchy(Base):
         model.add(
             Conv2D(
                 64,
-                12,
+                15,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 128),
@@ -34,7 +35,7 @@ class ConvolutionDeepHierarchy(Base):
         model.add(
             Conv2D(
                 64,
-                6,
+                9,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 64),
@@ -42,7 +43,7 @@ class ConvolutionDeepHierarchy(Base):
         model.add(
             Conv2D(
                 32,
-                6,
+                9,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 64),
@@ -50,12 +51,12 @@ class ConvolutionDeepHierarchy(Base):
         model.add(
             Conv2D(
                 32,
-                3,
+                9,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 32),
             ))  # 6
-        model.add(Dropout(0.25))
+        model.add(Dropout(0.1))
         model.add(UpSampling2D())
         model.add(
             Conv2D(
@@ -113,7 +114,7 @@ class ConvolutionDeepHierarchy(Base):
                 activation='relu',
                 input_shape=(320, 180, 16),
             ))  # 13
-        model.add(Dropout(0.25))
+        model.add(Dropout(0.1))
         model.add(UpSampling2D())
         model.add(
             Conv2D(
@@ -131,10 +132,10 @@ class ConvolutionDeepHierarchy(Base):
                 activation='relu',
                 input_shape=(640, 360, 9),
             ))  # 15
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.2))
         model.compile(
             loss='mse',
             optimizer='adam',
-            metrics=['binary_accuracy'],
+            metrics=['mse', psnr_loss],
         )
         return model

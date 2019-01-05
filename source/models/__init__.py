@@ -1,15 +1,17 @@
-from .convolution_deep_hierarchy import ConvolutionDeepHierarchy
-from .convolution_shallow_flat import ConvolutionShallowFlat
-from .convolution_shallow_hiepad import ConvolutionShallowHiepad
-from .convolution_shallow_hierarchy import ConvolutionShallowHierarchy
-from .convolution_shallow_pre_bicubic import ConvolutionShallowPreBicubic
-from .convolution_shallow_pre_nearest import ConvolutionShallowPreNearest
+from .convolution_deep import ConvolutionDeep
+from .convolution_shallow import ConvolutionShallow
+from .convolution_shallow_scaled import ConvolutionShallowScaled
+
+from .interpolation_bicubic import InterpolationBicubic
+from .interpolation_bilenear import InterpolationBilenear
+from .interpolation_nearest import InterpolationNearest
 
 __all__ = [
-    'ConvolutionDeepHierarchy',
-    'ConvolutionShallowFlat',
-    'ConvolutionShallowHiepad',
-    'ConvolutionShallowHierarchy',
-    'ConvolutionShallowPreBicubic',
-    'ConvolutionShallowPreNearest',
+    'ConvolutionDeep',
+    'ConvolutionShallow',
+    'ConvolutionShallowScaled',
+    # fake interpolation models
+    'InterpolationBicubic',
+    'InterpolationBilenear',
+    'InterpolationNearest',
 ]

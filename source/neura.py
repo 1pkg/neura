@@ -123,6 +123,7 @@ if arguments.model_refresh:
 else:
     model.unserialize()
 model.serialize()
+print(model.history())
 
 score = model.score(
     arguments.bundle,

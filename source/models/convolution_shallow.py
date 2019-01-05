@@ -1,10 +1,11 @@
 from keras.models import Sequential
-from keras.layers import Conv2D, Dropout
+from keras.layers import Conv2D, Dropout, UpSampling2D
 
-from .base_pre_nearest import BasePreNearest
+from .base import Base
+from .loss_func import psnr_loss
 
 
-class ConvolutionShallowPreNearest(BasePreNearest):
+class ConvolutionShallow(Base):
     def _model(self):
         model = Sequential()
         model.add(
@@ -13,16 +14,18 @@ class ConvolutionShallowPreNearest(BasePreNearest):
                 9,
                 padding='same',
                 activation='relu',
-                input_shape=(640, 360, 3),
+                input_shape=(160, 90, 3),
             ))
+        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 32,
                 1,
                 padding='same',
                 activation='relu',
-                input_shape=(640, 360, 64),
+                input_shape=(320, 180, 64),
             ))
+        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 3,
@@ -31,10 +34,10 @@ class ConvolutionShallowPreNearest(BasePreNearest):
                 activation='relu',
                 input_shape=(640, 360, 32),
             ))
-        model.add(Dropout(0.25))
+        model.add(Dropout(0.1))
         model.compile(
             loss='mse',
             optimizer='adam',
-            metrics=['binary_accuracy'],
+            metrics=['mse', psnr_loss],
         )
         return model
