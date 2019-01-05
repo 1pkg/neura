@@ -71,7 +71,7 @@ class BaseInterpolation(Base):
         data = loader.data_test(bundle_size)
         result = []
         for image in data[0]:
-            image = numpy.array(data[0][i])
+            image = numpy.array(image)
             image *= 255
             image = Image.fromarray(numpy.uint8(image))
             image = image.convert('RGB')

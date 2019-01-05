@@ -1,74 +1,60 @@
 from keras.models import Model
-from keras.layers import Average, Conv2D, Dropout, Input, UpSampling2D
+from keras.layers import Average, Conv2D, Convolution2DTranspose, Dropout, Input, UpSampling2D
 
 from .base import Base
 from .loss_func import psnr_loss
 
 
-class ConvolutionMerge(Base):
+class ConvolutionDeconvolution(Base):
     def _model(self):
         inp = Input(shape=(160, 90, 3))
         layer = Conv2D(
             64,
-            9,
+            3,
             padding='same',
             activation='relu',
             input_shape=(160, 90, 3),
         )(inp)
         layer = UpSampling2D()(layer)
-        layer1 = Conv2D(
-            32,
-            1,
-            padding='same',
-            activation='relu',
-            input_shape=(320, 180, 64),
-        )(layer)
-        layer2 = Conv2D(
-            32,
+        layer_conv = Conv2D(
+            64,
             3,
             padding='same',
             activation='relu',
             input_shape=(320, 180, 64),
         )(layer)
-        layer3 = Conv2D(
-            32,
-            5,
+        layer_deconv = Convolution2DTranspose(
+            64,
+            3,
             padding='same',
             activation='relu',
             input_shape=(320, 180, 64),
-        )(layer)
-        layer = Average()([layer1, layer2, layer3])
+        )(layer_conv)
+        layer = Average()([layer_conv, layer_deconv])
         layer = Dropout(0.15)(layer)
         layer = UpSampling2D()(layer)
-        layer1 = Conv2D(
-            3,
-            1,
-            padding='same',
-            activation='relu',
-            input_shape=(640, 360, 32),
-        )(layer)
-        layer2 = Conv2D(
-            3,
+        layer_conv = Conv2D(
+            64,
             3,
             padding='same',
             activation='relu',
-            input_shape=(640, 360, 32),
+            input_shape=(640, 360, 64),
         )(layer)
-        layer3 = Conv2D(
-            3,
+        layer_deconv = Convolution2DTranspose(
+            64,
             3,
             padding='same',
             activation='relu',
-            input_shape=(640, 360, 32),
+            input_shape=(640, 360, 64),
         )(layer)
-        layer = Average()([layer1, layer2, layer3])
+        layer = Average()([layer_conv, layer_deconv])
         layer = Dropout(0.15)(layer)
         out = Conv2D(
             3,
             5,
             padding='same',
             activation='relu',
-            input_shape=(640, 360, 32),
+            input_shape=(640, 360, 64),
         )(layer)
         model = Model(inp, out)
         model.compile(
