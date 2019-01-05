@@ -19,6 +19,9 @@ class BaseInterpolation(Base):
     def unserialize(self):
         pass
 
+    def history(self):
+        pass
+
     def train(
             self,
             bundle,

@@ -78,6 +78,13 @@ argparser.add_argument(
 )
 
 argparser.add_argument(
+    '--show_train_plots',
+    type=bool,
+    default=False,
+    help='show plots for models training',
+)
+
+argparser.add_argument(
     '--verbose',
     type=bool,
     default=True,
@@ -123,7 +130,9 @@ if arguments.model_refresh:
 else:
     model.unserialize()
 model.serialize()
-print(model.history())
+if arguments.show_train_plots:
+    plotter = utils.Plotter(arguments.bundle, model.name())
+    plotter.show(model.history())
 
 score = model.score(
     arguments.bundle,
