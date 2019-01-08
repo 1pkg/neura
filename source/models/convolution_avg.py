@@ -1,5 +1,6 @@
 from keras.models import Model
-from keras.layers import Average, Conv2D, Dropout, Input, UpSampling2D
+from keras.optimizers import Adam
+from keras.layers import Average, Conv2D, Input, UpSampling2D
 
 from .base import Base
 from .loss_func import psnr_loss
@@ -38,7 +39,6 @@ class ConvolutionAvg(Base):
             input_shape=(320, 180, 64),
         )(layer)
         layer = Average()([layer1, layer2, layer3])
-        layer = Dropout(0.15)(layer)
         layer = UpSampling2D()(layer)
         layer1 = Conv2D(
             3,
@@ -62,7 +62,6 @@ class ConvolutionAvg(Base):
             input_shape=(640, 360, 32),
         )(layer)
         layer = Average()([layer1, layer2, layer3])
-        layer = Dropout(0.15)(layer)
         out = Conv2D(
             3,
             5,
@@ -72,8 +71,8 @@ class ConvolutionAvg(Base):
         )(layer)
         model = Model(inp, out)
         model.compile(
+            optimizer=Adam(lr=1e-3),
             loss='mse',
-            optimizer='adam',
-            metrics=['mse', psnr_loss],
+            metrics=[psnr_loss],
         )
         return model

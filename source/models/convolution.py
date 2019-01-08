@@ -1,11 +1,12 @@
 from keras.models import Sequential
-from keras.layers import Conv2D, Dropout
+from keras.optimizers import Adam
+from keras.layers import Conv2D, UpSampling2D
 
-from .base_scaled import BaseScaled
+from .base import Base
 from .loss_func import psnr_loss
 
 
-class ConvolutionShallowScaled(BaseScaled):
+class Convolution(Base):
     def _model(self):
         model = Sequential()
         model.add(
@@ -14,16 +15,18 @@ class ConvolutionShallowScaled(BaseScaled):
                 9,
                 padding='same',
                 activation='relu',
-                input_shape=(640, 360, 3),
+                input_shape=(160, 90, 3),
             ))
+        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 32,
                 1,
                 padding='same',
                 activation='relu',
-                input_shape=(640, 360, 64),
+                input_shape=(320, 180, 64),
             ))
+        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 3,
@@ -32,10 +35,9 @@ class ConvolutionShallowScaled(BaseScaled):
                 activation='relu',
                 input_shape=(640, 360, 32),
             ))
-        model.add(Dropout(0.15))
         model.compile(
+            optimizer=Adam(lr=1e-3),
             loss='mse',
-            optimizer='adam',
-            metrics=['mse', psnr_loss],
+            metrics=[psnr_loss],
         )
         return model

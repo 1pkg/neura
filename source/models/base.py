@@ -67,6 +67,8 @@ class Base:
             steps_per_epoch=steps_per_epoch,
             epochs=epochs,
             verbose=verbose,
+            validation_data=loader.gen_data_test(bundle_size),
+            validation_steps=steps_per_epoch,
         )
         path_history = path.join(self._path_history, self.name() + '.hi')
         with open(path_history, 'wb') as file_hi:

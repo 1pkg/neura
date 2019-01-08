@@ -1,5 +1,6 @@
 from keras.models import Sequential
-from keras.layers import Conv2D, Dropout, UpSampling2D
+from keras.optimizers import Adam
+from keras.layers import Conv2D, UpSampling2D
 
 from .base import Base
 from .loss_func import psnr_loss
@@ -11,7 +12,7 @@ class ConvolutionDeep(Base):
         model.add(
             Conv2D(
                 128,
-                21,
+                9,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 3),
@@ -19,52 +20,52 @@ class ConvolutionDeep(Base):
         model.add(
             Conv2D(
                 128,
-                15,
+                3,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 128),
             ))  # 2
         model.add(
             Conv2D(
-                64,
-                15,
+                128,
+                5,
                 padding='same',
                 activation='relu',
                 input_shape=(160, 90, 128),
             ))  # 3
+        model.add(UpSampling2D())
         model.add(
             Conv2D(
                 64,
                 9,
                 padding='same',
                 activation='relu',
-                input_shape=(160, 90, 64),
+                input_shape=(320, 180, 128),
             ))  # 4
         model.add(
             Conv2D(
-                32,
-                9,
+                64,
+                3,
                 padding='same',
                 activation='relu',
-                input_shape=(160, 90, 64),
+                input_shape=(320, 180, 64),
             ))  # 5
         model.add(
             Conv2D(
-                32,
-                9,
+                64,
+                5,
                 padding='same',
                 activation='relu',
-                input_shape=(160, 90, 32),
+                input_shape=(320, 180, 64),
             ))  # 6
-        model.add(Dropout(0.15))
         model.add(UpSampling2D())
         model.add(
             Conv2D(
                 32,
-                3,
+                9,
                 padding='same',
                 activation='relu',
-                input_shape=(320, 180, 32),
+                input_shape=(640, 360, 64),
             ))  # 7
         model.add(
             Conv2D(
@@ -72,70 +73,27 @@ class ConvolutionDeep(Base):
                 3,
                 padding='same',
                 activation='relu',
-                input_shape=(320, 180, 32),
+                input_shape=(640, 360, 32),
             ))  # 8
         model.add(
             Conv2D(
                 32,
-                3,
+                5,
                 padding='same',
                 activation='relu',
-                input_shape=(320, 180, 32),
+                input_shape=(640, 360, 32),
             ))  # 9
         model.add(
             Conv2D(
-                16,
-                1,
+                3,
+                9,
                 padding='same',
                 activation='relu',
-                input_shape=(320, 180, 32),
+                input_shape=(640, 360, 3),
             ))  # 10
-        model.add(
-            Conv2D(
-                16,
-                1,
-                padding='same',
-                activation='relu',
-                input_shape=(320, 180, 16),
-            ))  # 11
-        model.add(
-            Conv2D(
-                16,
-                1,
-                padding='same',
-                activation='relu',
-                input_shape=(320, 180, 16),
-            ))  # 12
-        model.add(
-            Conv2D(
-                9,
-                3,
-                padding='same',
-                activation='relu',
-                input_shape=(320, 180, 16),
-            ))  # 13
-        model.add(Dropout(0.15))
-        model.add(UpSampling2D())
-        model.add(
-            Conv2D(
-                9,
-                5,
-                padding='same',
-                activation='relu',
-                input_shape=(640, 360, 9),
-            ))  # 14
-        model.add(
-            Conv2D(
-                3,
-                5,
-                padding='same',
-                activation='relu',
-                input_shape=(640, 360, 9),
-            ))  # 15
-        model.add(Dropout(0.3))
         model.compile(
+            optimizer=Adam(lr=1e-3),
             loss='mse',
-            optimizer='adam',
-            metrics=['mse', psnr_loss],
+            metrics=[psnr_loss],
         )
         return model

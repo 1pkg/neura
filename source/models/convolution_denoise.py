@@ -1,11 +1,12 @@
 from keras.models import Model
-from keras.layers import Average, Conv2D, Convolution2DTranspose, Dropout, Input, UpSampling2D
+from keras.optimizers import Adam
+from keras.layers import Average, Conv2D, Convolution2DTranspose, Input, UpSampling2D
 
 from .base import Base
 from .loss_func import psnr_loss
 
 
-class ConvolutionDeconvolution(Base):
+class ConvolutionDenoise(Base):
     def _model(self):
         inp = Input(shape=(160, 90, 3))
         layer = Conv2D(
@@ -31,7 +32,6 @@ class ConvolutionDeconvolution(Base):
             input_shape=(320, 180, 64),
         )(layer_conv)
         layer = Average()([layer_conv, layer_deconv])
-        layer = Dropout(0.15)(layer)
         layer = UpSampling2D()(layer)
         layer_conv = Conv2D(
             64,
@@ -48,7 +48,6 @@ class ConvolutionDeconvolution(Base):
             input_shape=(640, 360, 64),
         )(layer)
         layer = Average()([layer_conv, layer_deconv])
-        layer = Dropout(0.15)(layer)
         out = Conv2D(
             3,
             5,
@@ -58,8 +57,8 @@ class ConvolutionDeconvolution(Base):
         )(layer)
         model = Model(inp, out)
         model.compile(
+            optimizer=Adam(lr=1e-3),
             loss='mse',
-            optimizer='adam',
-            metrics=['mse', psnr_loss],
+            metrics=[psnr_loss],
         )
         return model

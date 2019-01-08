@@ -10,7 +10,7 @@ class Plotter:
         if history is None:
             return
 
-        pyplot.plot(history['mean_squared_error'])
+        pyplot.plot(history['loss'])
         pyplot.title(f'model {self.__model} with bundle {self.__bundle} mse')
         pyplot.ylabel('mse')
         pyplot.xlabel('epoch')
