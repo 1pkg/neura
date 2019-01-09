@@ -2,7 +2,6 @@ from .convolution import Convolution
 from .convolution_avg import ConvolutionAvg
 from .convolution_denoise import ConvolutionDenoise
 from .convolution_rec import ConvolutionRec
-from .convolution_deep import ConvolutionDeep
 from .convolution_scaled import ConvolutionScaled
 
 from .interpolation_bicubic import InterpolationBicubic
@@ -14,7 +13,6 @@ __all__ = [
     'Convolution',
     'ConvolutionAvg',
     'ConvolutionDenoise',
-    'ConvolutionDeep',
     'ConvolutionRec',
     'ConvolutionScaled',
     # fake interpolation models

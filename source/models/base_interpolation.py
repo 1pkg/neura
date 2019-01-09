@@ -58,7 +58,6 @@ class BaseInterpolation(Base):
             averages_psnr += psnr_np(data[1][i], image)
         return [
             averages_mse / len(data[0]),
-            averages_mse / len(data[0]),
             averages_psnr / len(data[0]),
         ]
 
