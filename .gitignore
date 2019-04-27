@@ -1,6 +1,14 @@
+# ide files
 .vscode/
+
+# py virtual env
 env/
-dump/
+
+# py cahce
 **/__pycache__/
 
+# all bin results
+dump/
+
+# gz test set
 *.tar.gz
